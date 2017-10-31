@@ -1,0 +1,14 @@
+{
+  "name": "chatsy-node-server",
+  "version": "1.0.0",
+  "description": "Node server for multi-language chat application",
+  "main": "server.js",
+  "author": "Justin M",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "^4.16.2",
+    "http": "^0.0.0",
+    "socket.io": "^2.0.4"
+  }
+}
