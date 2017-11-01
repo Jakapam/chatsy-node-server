@@ -1,43 +1,57 @@
 const express = require('express')
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const sockApp = require('express')();
+const dataApp = require('express')();
+const http = require('http').Server(sockApp);
+const io = require('socket.io')(http);
+const router = express.Router();
+const bodyParser = require('body-parser');
+const config = require('./config.js');
+const Translate = require('@google-cloud/translate');
+const projectId = 'chatsy-184715';
+const translate = new Translate({
+  projectId: projectId,
+});
+const translateFn = require('./translate')
 
-var users = []
-var rooms = []
+var languages = []
 
 io.on('connection', (client)=>{
   console.log('client connected')
 
-  client.on('send-username', (username)=>{
-    client.username = username;
-    users.push(username);
-  })
-
-  client.on('requestRoomList', ()=>{
-    client.emit('roomList', rooms)
-    console.log("Room list sent: " + rooms)
-  })
-
-
-  client.on('room',(room) => {
-      client.join(room);
-      if (rooms.includes(room)){
-        console.log(`${client.username} has joined ${room}`)
-      }else{
-        rooms.push(room);
-        io.emit('roomList', rooms);
-        console.log(`${client.username} has created ${room}`);
-      }
-   });
-
-  client.on('chat message', (msgObj)=> {
-    io.to(msgObj.room).emit(`message${msgObj.room}`, `${client.username}: ${msgObj.msg}`);
+  client.on('chat message', (msg)=>{
+    languages.forEach((lang)=>{
+      translateFn(translate,msg,lang).then(results => {
+        const translation = results[0];
+        client.broadcast.emit(`chatMsg-${lang}`, `${translation}`);
+      })
     })
+  })
+
+  client.on('set language',(language)=>{
+    if (!languages.includes(language)){
+      languages.push(language)
+    }
+    client.language= language;
+  })
 
   client.on('disconnect', ()=>console.log('client disconnected'))
 });
 
-http.listen(3000, ()=>{
-  console.log('listening on port:3000');
+dataApp.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+dataApp.use(bodyParser.json());
+dataApp.use('/api', require('./middleware/auth.js'));
+dataApp.use('/', require('./controllers/users.js')(router));
+
+
+
+http.listen(3001, ()=>{
+  console.log('listening for WebSockets port:3001');
+});
+
+dataApp.listen(8080, ()=>{
+  console.log('listening for data requests port:8080');
 });
