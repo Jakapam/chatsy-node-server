@@ -13,23 +13,33 @@ const translate = new Translate({
 });
 const translateFn = require('./translate')
 
-var languages = []
+var languagesToTransmit = ["en"]
+
+
 
 io.on('connection', (client)=>{
   console.log('client connected')
 
-  client.on('chat message', (msg)=>{
-    languages.forEach((lang)=>{
-      translateFn(translate,msg,lang).then(results => {
+  client.on('getLanguages', ()=>{
+    client.emit(supportedLanguages)
+  })
+
+  client.on('chatMsgServer', (msg)=>{
+    console.log("msg received: ", msg)
+
+    languagesToTransmit.forEach((lang)=>{
+      translateFn(translate,msg.content,lang).then(results => {
         const translation = results[0];
-        client.broadcast.emit(`chatMsg-${lang}`, `${translation}`);
+        const translatedMsg = Object.assign({},msg,{content: `${translation}`})
+        client.broadcast.emit(`chatMsg-${lang}`, translatedMsg);
       })
+
     })
   })
 
-  client.on('set language',(language)=>{
-    if (!languages.includes(language)){
-      languages.push(language)
+  client.on('setLanguage',(language)=>{
+    if (!languagesToTransmit.includes(language)){
+      languagesToTransmit.push(language)
     }
     client.language= language;
   })
@@ -43,10 +53,11 @@ dataApp.use(function(req, res, next) {
   next();
 });
 dataApp.use(bodyParser.json());
+dataApp.use('/languages', require('./controllers/languages.js')(router));
 dataApp.use('/api', require('./middleware/auth.js'));
-dataApp.use('/', require('./controllers/users.js')(router));
 
-
+console.log(translate)
+dataApp.use('/', require('./controllers/users.js')(router, translate));
 
 http.listen(3001, ()=>{
   console.log('listening for WebSockets port:3001');
