@@ -1,0 +1,18 @@
+{
+  "development": {
+    "username": "justinm",
+    "password": null,
+    "database": "chatsy-dev",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "justinm",
+    "password": null,
+    "database": "chatsy-test",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}

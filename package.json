@@ -6,12 +6,25 @@
   "author": "Justin M",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "start:dev": "GOOGLE_APPLICATION_CREDENTIALS='./chatsy.json' nodemon --inspect server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "@google-cloud/translate": "^1.1.0",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "http": "^0.0.0",
     "jsonwebtoken": "^8.1.0",
+    "morgan": "^1.9.0",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.22.1",
     "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
   }
 }

@@ -4,21 +4,18 @@ const translate = new Translate({
   projectId: projectId,
 });
 
-module.exports=function(router){
-  router.get('/all', function(req, res) {
-
-    translate
-      .getLanguages()
-      .then(results => {
-        var supportedLanguages = results[0];
-        res.json({
-            supportedLanguages
-          });
-      })
-      .catch(err => {
-        console.error('ERROR:', err);
+module.exports = {
+  list(req, res){
+    return translate
+    .getLanguages()
+    .then(results => {
+      const supportedLanguages = results[0];
+      res.json({
+        supportedLanguages
       });
-
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
     });
-  return router;
+  }
 }

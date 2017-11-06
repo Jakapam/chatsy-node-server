@@ -1,4 +1,4 @@
 module.exports = {
     PORT: 8080,
-    JWT_SECRET: 'secretpassword'
+    JWT_SECRET: 'jakapamsecret'
 };
