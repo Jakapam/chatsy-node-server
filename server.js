@@ -7,12 +7,13 @@ const bodyParser = require('body-parser');
 const config = require('./config.js');
 const cors = require('cors')
 
-const corsOptions = {
-  origin: 'http://localhost:3000'
-}
+// const corsOptions = {
+//   origin: ['http://localhost:3000','http://192.168.2.40:3000/']
+// }
 
-dataApp.use(cors(corsOptions))
-dataApp.options('/users',cors(corsOptions))
+dataApp.use(cors())
+// dataApp.options('/users',cors(corsOptions))
+// dataApp.options('/languages',cors(corsOptions))
 
 dataApp.use(bodyParser.json());
 dataApp.use(bodyParser.urlencoded({ extended: true }));

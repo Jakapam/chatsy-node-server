@@ -21,7 +21,8 @@ module.exports = {
     })
     .catch(error => {
       console.log(error)
-      return res.status(401).send(error)
+      let message = {error: "Sign up error"}
+      return res.status(401).send(message)
     })
   },
 
